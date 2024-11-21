@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             label1 = new Label();
             label2 = new Label();
             txtFirstName = new TextBox();
@@ -42,6 +43,8 @@
             btnSave = new Button();
             btnDelete = new Button();
             btnAdd = new Button();
+            errorProvider1 = new ErrorProvider(components);
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -180,6 +183,10 @@
             btnAdd.UseVisualStyleBackColor = true;
             btnAdd.Click += btnAdd_Click;
             // 
+            // errorProvider1
+            // 
+            errorProvider1.ContainerControl = this;
+            // 
             // Frm_Person
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -201,6 +208,7 @@
             Controls.Add(label1);
             Name = "Frm_Person";
             Text = "Frm_Person";
+            ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -221,5 +229,6 @@
         public Button btnSave;
         public Button btnAdd;
         public Button btnDelete;
+        private ErrorProvider errorProvider1;
     }
 }

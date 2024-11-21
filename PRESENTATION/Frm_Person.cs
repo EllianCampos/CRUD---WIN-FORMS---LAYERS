@@ -45,32 +45,41 @@ namespace PRESENTATION
             txtAge.Text = person.Age.ToString();
         }
 
+        public void ShowFieldsErrors(Dictionary<string, string> errors)
+        {
+            string? error;
+            errorProvider1.Clear();
+
+            if (errors.TryGetValue("FirstName", out error))  
+                errorProvider1.SetError(txtFirstName, error);
+
+            if (errors.TryGetValue("LastName", out error))
+                errorProvider1.SetError(txtLastName, error);
+            
+        }
+
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            try
+            var person = new Person
             {
-                var person = new Person
-                {
-                    FirstName = txtFirstName.Text,
-                    LastName = txtLastName.Text,
-                    NickName = txtNickName.Text,
-                    DateOfBirth = DateOnly.Parse(dtpDateOfBirth.Text),
-                    Age = int.TryParse(txtAge.Text, out int age) ? age : 0,
-                };
+                FirstName = txtFirstName.Text,
+                LastName = txtLastName.Text,
+                NickName = txtNickName.Text,
+                DateOfBirth = DateOnly.Parse(dtpDateOfBirth.Text),
+                Age = int.TryParse(txtAge.Text, out int age) ? age : 0,
+            };
 
-                personBLL.Save(person);
+            var result = personBLL.Save(person);
 
-                MessageBox.Show("Person added successfuly");
-                this.Dispose();
-            }
-            catch (ArgumentException ex)
+            if (!result.Success)
             {
-                MessageBox.Show(ex.Message);
+                ShowFieldsErrors(result.Errors);
+                MessageBox.Show(result.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Something went wrong: " + ex.Message);
-            }
+
+            MessageBox.Show(result.Message, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Dispose();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -89,6 +98,7 @@ namespace PRESENTATION
 
             if (!result.Success)
             {
+                ShowFieldsErrors(result.Errors);
                 MessageBox.Show(result.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

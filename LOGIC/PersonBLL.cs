@@ -21,27 +21,29 @@ namespace LOGIC
 
         public Person GetById(int id) => _personDAL.GetById(id);
 
-        public void Save(Person person)
+        public Result Save(Person person)
         {
-            if (person.FirstName == "")
-                throw new ArgumentException("The FirstName is required");
+            var errors = Validations(person);
+            if (errors.Count != 0)
+                return new Result { Success = false, Message = "The fields don't meet the validations", Errors = errors };
 
-            if (person.LastName == "")
-                throw new ArgumentException("The LastName is required");
-
-            bool result = _personDAL.Insert(person);
-
-            if (!result)
-                throw new Exception("There was an error saving the Person in the database");
+            try
+            {
+                _personDAL.Insert(person);
+                return new Result { Success = true, Message = "Person saved successfuly" };
+            }
+            catch (Exception ex)
+            {
+                return new Result { Success = false, Message = "Something went wrong: " + ex.Message };
+            }
         }
 
         public Result Update(Person person)
         {
-            if (person.FirstName == "")
-                return new Result { Success = false, Message = "The FirstName is required" };
-
-            if (person.LastName == "")
-                return new Result { Success = false, Message = "The LastName is required" };
+            var errors = Validations(person);
+            if (errors.Count != 0)
+                return new Result { Success = false, Message = "The fields don't meet the validations", Errors = errors };
+            
             try
             {
                 _personDAL.Update(person);
@@ -63,6 +65,21 @@ namespace LOGIC
             {
                 return new Result { Success = false, Message = "Something went wrong: " + ex.Message };
             }
+        }
+
+        public Dictionary<string, string> Validations(Person person)
+        {
+            var errros = new Dictionary<string, string>();
+
+            if (person.FirstName == "")
+                errros.Add("FirstName", "The FirstName is required");
+            else if (person.FirstName.Length < 5)
+                errros.Add("FirstName", "The FirstName must have a least 5 characters"); 
+
+            if (person.LastName == "")
+                errros.Add("LastName", "The LastName is required");
+
+            return errros;
         }
     }
 }
